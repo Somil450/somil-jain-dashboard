@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<!-- PWA META -->
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#38bdf8">
+
+<!-- iOS Support -->
+<link rel="apple-touch-icon" href="icon-192.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+
+<title>Somil Jain | Mobile Dashboard</title>
+
+<style>
+:root{
+  --bg:#020617;
+  --card:#0f172a;
+  --soft:#1e293b;
+  --accent:#38bdf8;
+  --danger:#fb7185;
+  --success:#22c55e;
+  --text:#e5e7eb;
+  --muted:#94a3b8;
+}
+
+.light{
+  --bg:#f8fafc;
+  --card:#ffffff;
+  --soft:#e2e8f0;
+  --accent:#0284c7;
+  --danger:#dc2626;
+  --success:#16a34a;
+  --text:#020617;
+  --muted:#475569;
+}
+
+*{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+  -webkit-tap-highlight-color: transparent;
+}
+
+body{
+  background:var(--bg);
+  color:var(--text);
+  font-family:-apple-system,BlinkMacSystemFont,system-ui;
+}
+
+.app{
+  max-width:420px;
+  margin:auto;
+  min-height:100vh;
+  padding:16px 16px 110px;
+}
+
+/* HEADER */
+.header{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:18px;
+}
+.profile{
+  display:flex;
+  gap:12px;
+  align-items:center;
+}
+.avatar{
+  width:44px;height:44px;
+  border-radius:50%;
+  background:linear-gradient(135deg,#38bdf8,#6366f1);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-weight:800;
+  color:black;
+}
+.toggle{
+  font-size:20px;
+  cursor:pointer;
+  transition:.3s;
+}
+.toggle:hover{transform:rotate(20deg) scale(1.1)}
+
+/* SCREENS */
+.screen{
+  animation:slide .35s ease;
+}
+@keyframes slide{
+  from{opacity:0;transform:translateY(20px)}
+  to{opacity:1;transform:none}
+}
+.hidden{display:none}
+
+/* INPUTS */
+input,select,textarea{
+  width:100%;
+  padding:14px;
+  border:none;
+  border-radius:16px;
+  background:var(--soft);
+  color:var(--text);
+  margin-bottom:10px;
+  transition:.25s;
+}
+input:focus,textarea:focus,select:focus{
+  outline:none;
+  box-shadow:0 0 0 2px var(--accent);
+}
+
+button{
+  width:100%;
+  padding:14px;
+  border:none;
+  border-radius:16px;
+  background:var(--accent);
+  color:black;
+  font-weight:700;
+  cursor:pointer;
+  transition:.25s;
+}
+button:hover{
+  transform:translateY(-2px);
+  box-shadow:0 10px 30px rgba(56,189,248,.35);
+}
+button:active{
+  transform:scale(.97);
+}
+
+/* CARDS */
+.task,.note,.money-item,.stat,.money-box,.link{
+  background:var(--card);
+  border-radius:18px;
+  padding:14px;
+  margin-bottom:12px;
+  transition:.25s;
+}
+.task:hover,.note:hover,.money-item:hover,.stat:hover,.link:hover{
+  transform:translateY(-4px);
+  box-shadow:0 12px 30px rgba(0,0,0,.35);
+}
+
+/* TASK */
+.task{
+  display:flex;
+  gap:12px;
+  align-items:center;
+}
+.status{
+  width:12px;height:12px;
+  border-radius:50%;
+  background:var(--accent);
+}
+.task.done .status{background:var(--success)}
+.task.overdue h4{color:var(--danger)}
+
+.content{flex:1}
+.content h4{font-size:14px}
+.content small{font-size:11px;color:var(--muted)}
+
+.actions button{
+  background:none;
+  width:auto;
+  font-size:18px;
+  padding:6px;
+  color:var(--muted);
+}
+.actions button:hover{color:var(--accent)}
+
+/* PROGRESS */
+.progress{
+  height:8px;
+  background:var(--soft);
+  border-radius:10px;
+  overflow:hidden;
+  margin:12px 0;
+}
+.fill{
+  height:100%;
+  width:0%;
+  background:linear-gradient(90deg,var(--accent),#6366f1);
+  transition:.4s;
+}
+
+/* NOTES */
+.note h4{font-size:14px}
+.note p{font-size:12px;color:var(--muted);margin:6px 0}
+
+/* LINKS */
+.link{
+  display:flex;
+  gap:12px;
+  align-items:center;
+  text-decoration:none;
+  color:var(--text);
+  font-weight:600;
+}
+
+/* MONEY */
+.money-top{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:12px;
+}
+.money-box h4{font-size:12px;color:var(--muted)}
+.money-box p{font-size:22px;font-weight:800}
+.income{color:var(--success)}
+.expense{color:var(--danger)}
+
+.money-item{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+}
+.money-item small{color:var(--muted)}
+
+/* NAV */
+.nav{
+  position:fixed;
+  bottom:0;
+  left:0;right:0;
+  max-width:420px;
+  margin:auto;
+  background:rgba(15,23,42,.96);
+  backdrop-filter:blur(16px);
+  display:flex;
+  justify-content:space-around;
+  padding:14px 0;
+  border-radius:26px 26px 0 0;
+}
+.nav div{
+  font-size:22px;
+  opacity:.5;
+  cursor:pointer;
+  transition:.25s;
+}
+.nav div:hover{opacity:1;transform:scale(1.2)}
+.nav .active{
+  opacity:1;
+  color:var(--accent);
+  transform:scale(1.2);
+}
+</style>
+</head>
+
+<body>
+<div class="app">
+
+<!-- HEADER -->
+<div class="header">
+  <div class="profile">
+    <div class="avatar">SJ</div>
+    <div>
+      <strong>Somil Jain</strong><br>
+      <small style="color:var(--muted)">AI & Robotics</small>
+    </div>
+  </div>
+  <div class="toggle" id="theme">🌙</div>
+</div>
+
+<!-- TASKS -->
+<div id="tasks" class="screen">
+  <input id="taskText" placeholder="New task">
+  <input id="taskDate" type="date">
+  <button id="addTask">Add Task</button>
+  <div class="progress"><div class="fill" id="fill"></div></div>
+  <div id="taskList"></div>
+</div>
+
+<!-- NOTES -->
+<div id="notes" class="screen hidden">
+  <input id="noteTitle" placeholder="Note title">
+  <textarea id="noteBody" rows="4" placeholder="Write note..."></textarea>
+  <button id="addNote">Save Note</button>
+  <div id="noteList"></div>
+</div>
+
+<!-- LINKS -->
+<div id="links" class="screen hidden">
+  <a class="link" href="https://notesflixvitc.netlify.app" target="_blank">📘 Modules</a>
+  <a class="link" href="https://lms.vit.ac.in/login/index.php" target="_blank">🎓 LMS</a>
+  <a class="link" href="https://vtopcc.vit.ac.in/vtop/login" target="_blank">🏫 VTOP</a>
+  <a class="link" href="https://www.vhelpcc.com/pyqs" target="_blank">📝 PYQs</a>
+  <a class="link" href="https://vitolcc.vit.ac.in/login/index.php" target="_blank">🧪 VITOL</a>
+  <a class="link" href="https://github.com/Somil450" target="_blank">⌘ GitHub</a>
+</div>
+
+<!-- MONEY -->
+<div id="money" class="screen hidden">
+  <div class="money-top">
+    <div class="money-box">
+      <h4>Income</h4>
+      <p class="income" id="totalIncome">₹0</p>
+    </div>
+    <div class="money-box">
+      <h4>Expense</h4>
+      <p class="expense" id="totalExpense">₹0</p>
+    </div>
+  </div>
+  <div class="money-box">
+    <h4>Balance</h4>
+    <p id="balance">₹0</p>
+  </div>
+
+  <input id="moneyText" placeholder="Description">
+  <input id="moneyAmount" type="number" placeholder="Amount">
+  <select id="moneyType">
+    <option value="income">Income</option>
+    <option value="expense">Expense</option>
+  </select>
+  <button id="addMoney">Add</button>
+  <div id="moneyList"></div>
+</div>
+
+<!-- STATS -->
+<div id="stats" class="screen hidden">
+  <div class="stat">
+    <h4>Total Tasks</h4>
+    <p id="totalTasks">0</p>
+  </div>
+  <div class="stat">
+    <h4>Completed</h4>
+    <p id="doneTasks">0</p>
+  </div>
+</div>
+
+</div>
+
+<!-- NAV -->
+<div class="nav">
+  <div class="active" data-tab="tasks">📝</div>
+  <div data-tab="notes">🗒️</div>
+  <div data-tab="links">🔗</div>
+  <div data-tab="money">💰</div>
+  <div data-tab="stats">📊</div>
+</div>
+
+<script>
+let tasks=JSON.parse(localStorage.tasks||"[]");
+let notes=JSON.parse(localStorage.notes||"[]");
+let money=JSON.parse(localStorage.money||"[]");
+
+/* THEME */
+const theme=document.getElementById("theme");
+if(localStorage.theme==="light"){
+  document.body.classList.add("light");
+  theme.textContent="☀️";
+}
+theme.onclick=()=>{
+  document.body.classList.toggle("light");
+  localStorage.theme=document.body.classList.contains("light")?"light":"dark";
+  theme.textContent=localStorage.theme==="light"?"☀️":"🌙";
+};
+
+/* TASKS */
+addTask.onclick=()=>{
+  if(!taskText.value.trim())return;
+  tasks.push({text:taskText.value,date:taskDate.value,done:false});
+  taskText.value="";taskDate.value="";
+  save();renderTasks();
+};
+
+function renderTasks(){
+  taskList.innerHTML="";
+  let done=0;
+  const today=new Date().toISOString().split("T")[0];
+  tasks.forEach((t,i)=>{
+    if(t.done)done++;
+    const d=document.createElement("div");
+    d.className="task"+(t.done?" done":"")+(t.date && t.date<today && !t.done?" overdue":"");
+    d.innerHTML=`
+      <div class="status"></div>
+      <div class="content">
+        <h4>${t.text}</h4>
+        <small>Due: ${t.date||"N/A"}</small>
+      </div>
+      <div class="actions">
+        <button onclick="toggleTask(${i})">✔</button>
+        <button onclick="deleteTask(${i})">✖</button>
+      </div>`;
+    taskList.appendChild(d);
+  });
+  fill.style.width=tasks.length?done/tasks.length*100+"%":"0%";
+  totalTasks.textContent=tasks.length;
+  doneTasks.textContent=done;
+}
+function toggleTask(i){tasks[i].done=!tasks[i].done;save();renderTasks()}
+function deleteTask(i){tasks.splice(i,1);save();renderTasks()}
+
+/* NOTES */
+addNote.onclick=()=>{
+  if(!noteTitle.value||!noteBody.value)return;
+  notes.push({title:noteTitle.value,body:noteBody.value});
+  noteTitle.value="";noteBody.value="";
+  save();renderNotes();
+};
+function renderNotes(){
+  noteList.innerHTML="";
+  notes.forEach((n,i)=>{
+    const d=document.createElement("div");
+    d.className="note";
+    d.innerHTML=`<h4>${n.title}</h4><p>${n.body}</p>
+    <button onclick="deleteNote(${i})">Delete</button>`;
+    noteList.appendChild(d);
+  });
+}
+function deleteNote(i){notes.splice(i,1);save();renderNotes()}
+
+/* MONEY */
+addMoney.onclick=()=>{
+  if(!moneyText.value||!moneyAmount.value)return;
+  money.push({
+    text:moneyText.value,
+    amount:Number(moneyAmount.value),
+    type:moneyType.value
+  });
+  moneyText.value="";moneyAmount.value="";
+  save();renderMoney();
+};
+function renderMoney(){
+  moneyList.innerHTML="";
+  let income=0,expense=0;
+  money.forEach((m,i)=>{
+    m.type==="income"?income+=m.amount:expense+=m.amount;
+    const d=document.createElement("div");
+    d.className="money-item";
+    d.innerHTML=`
+      <div>
+        <strong>${m.text}</strong><br>
+        <small>${m.type}</small>
+      </div>
+      <div>
+        ${m.type==="income"?"+":"-"}₹${m.amount}
+        <button onclick="deleteMoney(${i})">✖</button>
+      </div>`;
+    moneyList.appendChild(d);
+  });
+  totalIncome.textContent="₹"+income;
+  totalExpense.textContent="₹"+expense;
+  balance.textContent="₹"+(income-expense);
+}
+function deleteMoney(i){money.splice(i,1);save();renderMoney()}
+
+/* STORAGE */
+function save(){
+  localStorage.tasks=JSON.stringify(tasks);
+  localStorage.notes=JSON.stringify(notes);
+  localStorage.money=JSON.stringify(money);
+}
+
+/* NAV */
+document.querySelectorAll(".nav div").forEach(n=>{
+  n.onclick=()=>{
+    document.querySelectorAll(".nav div").forEach(x=>x.classList.remove("active"));
+    n.classList.add("active");
+    ["tasks","notes","links","money","stats"].forEach(id=>{
+      document.getElementById(id).classList.add("hidden");
+    });
+    document.getElementById(n.dataset.tab).classList.remove("hidden");
+  };
+});
+
+renderTasks();renderNotes();renderMoney();
+
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", () => {
+    navigator.serviceWorker.register("service-worker.js")
+      .then(() => console.log("Service Worker Registered"))
+      .catch(err => console.log("SW failed", err));
+  });
+}
+</script>
+
+</body>
+</html>
